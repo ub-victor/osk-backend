@@ -22,8 +22,8 @@ export const createEventSchema = z
     }),
     registered: z
         .union([z.number().int().nonnegative(), z.string(), z.null()])
-      .optional()
-      .nullable()
+    .optional()
+    .nullable()
       .transform((v) => {
         if (v === null || v === undefined || v === "") return null;
         const num = Number(v);
