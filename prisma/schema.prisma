@@ -126,4 +126,4 @@ model Project {
   updatedAt DateTime @updatedAt
 
   @@unique([repoOwner, repoName])
-}
+
