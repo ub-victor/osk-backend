@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createEventSchema = z
-  .object({
+.object({
     title: z.string().min(1, "Title is required").trim(),
     tagline: z.string().trim().optional().nullable(),
     description: z.string().min(1, "Description is required").trim(),
