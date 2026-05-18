@@ -18,7 +18,7 @@ async function findAllMembers(
 }
 
 async function findMemberById(
-  req: Request<{ id: string }>,
+  req: Request<{ id: string }>, 
   res: Response,
   next: NextFunction,
 ) {
