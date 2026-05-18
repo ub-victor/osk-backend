@@ -12,9 +12,9 @@ export const createEventSchema = z
         .default(false),
     capacity: z
         .union([z.number().int().nonnegative(), z.string(), z.null()])
-      .optional()
-      .nullable()
-      .transform((v) => {
+        .optional()
+        .nullable()
+    .transform((v) => {
         if (v === null || v === undefined || v === "") return null;
         const num = Number(v);
         if (isNaN(num)) return undefined;
