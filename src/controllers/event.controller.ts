@@ -3,6 +3,7 @@ import eventService from "../services/event.service";
 import response from "../utils/response";
 import { Event, Prisma } from "../generated/prisma/client";
 import { destroyImage, uploadBuffer } from "../utils/cloudinary-upload";
+import trimStrings from "../utils/trim-strings";
 
 const FOLDER = "open-source-kigali/events";
 
@@ -102,7 +103,7 @@ async function addEvent(
     const uploaded = await uploadBuffer(req.file.buffer, FOLDER);
     publicId = uploaded.public_id;
 
-    const data = buildEventData(req.body) as EventBody;
+    const data = buildEventData(trimStrings(req.body)) as EventBody;
     data.imageUrl = uploaded.secure_url;
     data.imagePublicId = uploaded.public_id;
     if (!data.speakers) data.speakers = [];
@@ -126,7 +127,7 @@ async function updateEvent(
     const existing = await eventService.findEventById(req.params.id);
     if (!existing) return response.failure(res, "Event not found", 404);
 
-    const data = buildEventData(req.body);
+    const data = buildEventData(trimStrings(req.body));
 
     if (req.file) {
       const uploaded = await uploadBuffer(req.file.buffer, FOLDER);
