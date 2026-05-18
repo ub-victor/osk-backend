@@ -35,7 +35,7 @@ async function findMemberById(
 
 async function addMember(
   req: Request<object, unknown, Omit<Member, "id">>,
-  res: Response, 
+  res: Response,
   next: NextFunction,
 ) {
   try {
