@@ -111,7 +111,7 @@ model Project {
   maintainer    String?
   langColor     String?
 
-  
+  ghDescription  String?
   ghLanguage     String?
   ghTopics       String[]
   ghStars        Int       @default(0)
