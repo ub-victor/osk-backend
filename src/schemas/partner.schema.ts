@@ -16,7 +16,7 @@ export const createPartnerSchema = z.object({
     partershipReason: z
         .string()
         .min(1, "Partnership reason is required")
-    .trim(),
+        .trim(),
 });
 
 export const updatePartnerSchema = createPartnerSchema.partial();
