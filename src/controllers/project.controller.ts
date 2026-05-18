@@ -34,7 +34,8 @@ async function findAllProjects(
   next: NextFunction,
 ) {
   try {
-    const projects = await projectService.findAllProjects();
+    const featured = _req.query.featured === "true" ? true : undefined;
+    const projects = await projectService.findAllProjects(featured);
     response.success(res, projects, 200, "Projects retrieved successfully");
   } catch (err) {
     next(err);
