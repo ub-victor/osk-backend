@@ -31,7 +31,7 @@ export const createEventSchema = z
         return num;
     }),
     date: z
-      .string()
+    .string()
       .min(1, "Date is required")
       .transform((v) => new Date(v))
       .refine((date) => !isNaN(date.getTime()), {
