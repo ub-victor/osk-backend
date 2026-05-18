@@ -18,7 +18,7 @@ githubUsername: z
 });
 
 export const updateMemberSchema = createMemberSchema.partial().extend({
-codingLevel: z.enum(["beginner", "intermediate", "advanced"] as const).optional(),
+    codingLevel: z.enum(["beginner", "intermediate", "advanced"] as const).optional(),
 });
 
 export type CreateMemberInput = z.infer<typeof createMemberSchema>;
