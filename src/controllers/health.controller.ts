@@ -5,4 +5,4 @@ function checkHealth(_req: Request, res: Response) {
   response.success(res, { status: "ok", uptime: process.uptime() });
 }
 
-export default { checkHealth };
+export default { checkHealth }; 
