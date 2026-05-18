@@ -13,7 +13,7 @@ githubUsername: z
     .min(1, "GitHub username is required")
     .trim(),
     orgName: z.string().min(1, "Organization name is required").trim(),
-  joinReason: z.string().min(1, "Join reason is required").trim(),
+joinReason: z.string().min(1, "Join reason is required").trim(),
   codingLevel: z.enum(["beginner", "intermediate", "advanced"] as const),
 });
 
