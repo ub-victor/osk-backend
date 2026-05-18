@@ -8,7 +8,7 @@ export const createMemberSchema = z.object({
         .min(1, "Email is required")
         .email("Email format is invalid")
         .trim(),
-  githubUsername: z
+githubUsername: z
     .string()
     .min(1, "GitHub username is required")
     .trim(),
