@@ -19,7 +19,7 @@ export const createEventSchema = z
         const num = Number(v);
         if (isNaN(num)) return undefined;
         return num;
-      }),
+    }),
     registered: z
       .union([z.number().int().nonnegative(), z.string(), z.null()])
       .optional()
