@@ -67,7 +67,7 @@ async function updateMember(
 async function deleteMember(
   req: Request<{ id: string }>,
   res: Response,
-  next: NextFunction, 
+  next: NextFunction,
 ) {
   try {
     await memberService.deleteMember(req.params.id);
