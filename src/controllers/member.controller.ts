@@ -12,7 +12,7 @@ async function findAllMembers(
   try {
     const members = await memberService.findAllMembers();
     response.success(res, members, 200, "Members retrieved successfully");
-  } catch (err) { 
+  } catch (err) {
     next(err);
   }
 }
