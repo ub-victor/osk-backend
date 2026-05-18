@@ -34,7 +34,7 @@ export const createEventSchema = z
     .string()
     .min(1, "Date is required")
     .transform((v) => new Date(v))
-      .refine((date) => !isNaN(date.getTime()), {
+    .refine((date) => !isNaN(date.getTime()), {
         message: "Date must be a valid ISO date string",
       }),
     endDate: z
