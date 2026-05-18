@@ -19,7 +19,7 @@ async function findAllMembers(
 
 async function findMemberById(
   req: Request<{ id: string }>,
-  res: Response,
+  res: Response, 
   next: NextFunction,
 ) {
   try {
