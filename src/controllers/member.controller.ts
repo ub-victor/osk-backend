@@ -20,7 +20,7 @@ async function findAllMembers(
 async function findMemberById(
   req: Request<{ id: string }>,
   res: Response,
-  next: NextFunction,
+  next: NextFunction, 
 ) {
   try {
     const member = await memberService.findMemberById(req.params.id);
