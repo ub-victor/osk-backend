@@ -69,13 +69,7 @@ async function deleteMember(
   res: Response,
   next: NextFunction,
 ) {
-  try {
-    await memberService.deleteMember(req.params.id);
-    response.success(res, null, 204, "Member deleted successfully");
-  } catch (err) {
-    next(err);
-  } 
-}
+
 
 export default {
   findAllMembers,
