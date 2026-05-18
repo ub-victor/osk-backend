@@ -10,7 +10,7 @@ export const createEventSchema = z
         featured: z
         .union([z.boolean(), z.string().transform((v) => v === "true")])
         .default(false),
-    capacity: z
+        capacity: z
       .union([z.number().int().nonnegative(), z.string(), z.null()])
       .optional()
       .nullable()
