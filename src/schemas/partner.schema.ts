@@ -9,7 +9,7 @@ export const createPartnerSchema = z.object({
         .trim(),
     description: z.string().min(1, "Description is required").trim(),
     email: z
-    .string()
+        .string()
     .min(1, "Email is required")
     .email("Email format is invalid")
     .trim(),
