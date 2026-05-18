@@ -4,7 +4,7 @@ import { CodingLevel } from "../generated/prisma/client";
 export const createMemberSchema = z.object({
     name: z.string().min(1, "Name is required").trim(),
     email: z
-    .string()
+        .string()
     .min(1, "Email is required")
     .email("Email format is invalid")
     .trim(),
