@@ -4,6 +4,11 @@ import response from "../utils/response";
 import { Partner } from "../generated/prisma/client";
 import { destroyImage, uploadBuffer } from "../utils/cloudinary-upload";
 import trimStrings from "../utils/trim-strings";
+import {
+  createPartnerSchema,
+  updatePartnerSchema,
+  UpdatePartnerInput,
+} from "../schemas/partner.schema";
 
 type PartnerBody = Omit<Partner, "id" | "createdAt" | "updatedAt">;
 
@@ -52,6 +57,18 @@ async function addPartner(
 
   let publicId: string | undefined;
   try {
+    const validation = createPartnerSchema.safeParse(req.body);
+    if (!validation.success) {
+      return response.failure(
+        res,
+        validation.error.errors.map((e) => ({
+          field: e.path.join("."),
+          message: e.message,
+        })),
+        400,
+      );
+    }
+
     const uploaded = await uploadBuffer(
       req.file.buffer,
       "open-source-kigali/partners",
@@ -59,7 +76,7 @@ async function addPartner(
     publicId = uploaded.public_id;
 
     const newPartner = await partnerService.addPartner({
-      ...trimStrings(req.body),
+      ...validation.data,
       logoUrl: uploaded.secure_url,
       logoPublicId: uploaded.public_id,
     });
@@ -85,8 +102,20 @@ async function updatePartner(
     const existing = await partnerService.findPartnerById(req.params.id);
     if (!existing) return response.failure(res, "Partner not found", 404);
 
+    const validation = updatePartnerSchema.safeParse(req.body);
+    if (!validation.success) {
+      return response.failure(
+        res,
+        validation.error.errors.map((e) => ({
+          field: e.path.join("."),
+          message: e.message,
+        })),
+        400,
+      );
+    }
+
     const data: Partial<PartnerBody> = Object.fromEntries(
-      Object.entries(trimStrings(req.body)).filter(([, v]) => v !== ""),
+      Object.entries(validation.data).filter(([, v]) => v !== "" && v !== undefined),
     ) as Partial<PartnerBody>;
 
     if (req.file) {
