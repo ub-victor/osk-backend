@@ -112,7 +112,7 @@ model Project {
   langColor     String?
 
   ghDescription  String?
-  
+  ghLanguage     String?
   ghTopics       String[]
   ghStars        Int       @default(0)
   ghForks        Int       @default(0)
