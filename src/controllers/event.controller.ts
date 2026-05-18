@@ -53,14 +53,10 @@ async function addEvent(
   try {
     const validation = createEventSchema.safeParse(req.body);
     if (!validation.success) {
-      return response.failure(
-        res,
-        validation.error.errors.map((e) => ({
-          field: e.path.join("."),
-          message: e.message,
-        })),
-        400,
-      );
+      const errors = validation.error.issues
+        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
+        .join("; ");
+      return response.failure(res, errors, 400);
     }
 
     const uploaded = await uploadBuffer(req.file.buffer, FOLDER);
@@ -93,14 +89,10 @@ async function updateEvent(
 
     const validation = updateEventSchema.safeParse(req.body);
     if (!validation.success) {
-      return response.failure(
-        res,
-        validation.error.errors.map((e) => ({
-          field: e.path.join("."),
-          message: e.message,
-        })),
-        400,
-      );
+      const errors = validation.error.issues
+        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
+        .join("; ");
+      return response.failure(res, errors, 400);
     }
 
     const data: Prisma.EventUpdateInput = Object.fromEntries(

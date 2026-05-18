@@ -14,22 +14,11 @@ export const createMemberSchema = z.object({
     .trim(),
   orgName: z.string().min(1, "Organization name is required").trim(),
   joinReason: z.string().min(1, "Join reason is required").trim(),
-  codingLevel: z.enum(["beginner", "intermediate", "advanced"], {
-    errorMap: () => ({
-      message: "Coding level must be one of: beginner, intermediate, advanced",
-    }),
-  }),
+  codingLevel: z.enum(["beginner", "intermediate", "advanced"] as const),
 });
 
 export const updateMemberSchema = createMemberSchema.partial().extend({
-  codingLevel: z
-    .enum(["beginner", "intermediate", "advanced"], {
-      errorMap: () => ({
-        message:
-          "Coding level must be one of: beginner, intermediate, advanced",
-      }),
-    })
-    .optional(),
+  codingLevel: z.enum(["beginner", "intermediate", "advanced"] as const).optional(),
 });
 
 export type CreateMemberInput = z.infer<typeof createMemberSchema>;

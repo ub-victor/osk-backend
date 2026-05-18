@@ -59,14 +59,10 @@ async function addPartner(
   try {
     const validation = createPartnerSchema.safeParse(req.body);
     if (!validation.success) {
-      return response.failure(
-        res,
-        validation.error.errors.map((e) => ({
-          field: e.path.join("."),
-          message: e.message,
-        })),
-        400,
-      );
+      const errors = validation.error.issues
+        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
+        .join("; ");
+      return response.failure(res, errors, 400);
     }
 
     const uploaded = await uploadBuffer(
@@ -104,14 +100,10 @@ async function updatePartner(
 
     const validation = updatePartnerSchema.safeParse(req.body);
     if (!validation.success) {
-      return response.failure(
-        res,
-        validation.error.errors.map((e) => ({
-          field: e.path.join("."),
-          message: e.message,
-        })),
-        400,
-      );
+      const errors = validation.error.issues
+        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
+        .join("; ");
+      return response.failure(res, errors, 400);
     }
 
     const data: Partial<PartnerBody> = Object.fromEntries(

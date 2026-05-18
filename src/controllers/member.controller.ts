@@ -47,14 +47,10 @@ async function addMember(
   try {
     const validation = createMemberSchema.safeParse(req.body);
     if (!validation.success) {
-      return response.failure(
-        res,
-        validation.error.errors.map((e) => ({
-          field: e.path.join("."),
-          message: e.message,
-        })),
-        400,
-      );
+      const errors = validation.error.issues
+        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
+        .join("; ");
+      return response.failure(res, errors, 400);
     }
 
     const newMember = await memberService.addMember(validation.data);
@@ -72,14 +68,10 @@ async function updateMember(
   try {
     const validation = updateMemberSchema.safeParse(req.body);
     if (!validation.success) {
-      return response.failure(
-        res,
-        validation.error.errors.map((e) => ({
-          field: e.path.join("."),
-          message: e.message,
-        })),
-        400,
-      );
+      const errors = validation.error.issues
+        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
+        .join("; ");
+      return response.failure(res, errors, 400);
     }
 
     const filtered = Object.fromEntries(

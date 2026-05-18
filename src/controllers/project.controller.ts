@@ -66,14 +66,10 @@ async function addProject(
   try {
     const validation = createProjectSchema.safeParse(req.body);
     if (!validation.success) {
-      return response.failure(
-        res,
-        validation.error.errors.map((e) => ({
-          field: e.path.join("."),
-          message: e.message,
-        })),
-        400,
-      );
+      const errors = validation.error.issues
+        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
+        .join("; ");
+      return response.failure(res, errors, 400);
     }
 
     const uploaded = await uploadBuffer(req.file.buffer, FOLDER);
@@ -120,14 +116,10 @@ async function updateProject(
 
     const validation = updateProjectSchema.safeParse(req.body);
     if (!validation.success) {
-      return response.failure(
-        res,
-        validation.error.errors.map((e) => ({
-          field: e.path.join("."),
-          message: e.message,
-        })),
-        400,
-      );
+      const errors = validation.error.issues
+        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
+        .join("; ");
+      return response.failure(res, errors, 400);
     }
 
     const data: Record<string, unknown> = Object.fromEntries(

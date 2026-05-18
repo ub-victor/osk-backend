@@ -6,13 +6,7 @@ export const createEventSchema = z
     tagline: z.string().trim().optional().nullable(),
     description: z.string().min(1, "Description is required").trim(),
     category: z.string().min(1, "Category is required").trim(),
-    mode: z
-      .enum(["in-person", "virtual", "hybrid"], {
-        errorMap: () => ({
-          message: "Mode must be one of: in-person, virtual, hybrid",
-        }),
-      })
-      .default("in-person"),
+    mode: z.enum(["in-person", "virtual", "hybrid"] as const).default("in-person"),
     featured: z
       .union([z.boolean(), z.string().transform((v) => v === "true")])
       .default(false),
@@ -83,12 +77,8 @@ export const createEventSchema = z
   })
   .refine(
     (data) => {
-      if (
-        data.capacity !== null &&
-        data.registered !== null &&
-        data.capacity < data.registered
-      ) {
-        return false;
+      if (typeof data.capacity === "number" && typeof data.registered === "number") {
+        return data.capacity >= data.registered;
       }
       return true;
     },
