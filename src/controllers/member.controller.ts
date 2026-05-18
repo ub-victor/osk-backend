@@ -22,7 +22,7 @@ async function findMemberById(
   res: Response,
   next: NextFunction,
 ) {
-  try { 
+  try {
     const member = await memberService.findMemberById(req.params.id);
     if (!member) {
       return response.failure(res, "Member not found", 404);
