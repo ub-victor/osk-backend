@@ -3,6 +3,12 @@ import memberService from "../services/member.service";
 import response from "../utils/response";
 import { Member } from "../generated/prisma/client";
 import trimStrings from "../utils/trim-strings";
+import {
+  createMemberSchema,
+  updateMemberSchema,
+  CreateMemberInput,
+  UpdateMemberInput,
+} from "../schemas/member.schema";
 
 async function findAllMembers(
   _req: Request,
@@ -39,7 +45,19 @@ async function addMember(
   next: NextFunction,
 ) {
   try {
-    const newMember = await memberService.addMember(trimStrings(req.body));
+    const validation = createMemberSchema.safeParse(req.body);
+    if (!validation.success) {
+      return response.failure(
+        res,
+        validation.error.errors.map((e) => ({
+          field: e.path.join("."),
+          message: e.message,
+        })),
+        400,
+      );
+    }
+
+    const newMember = await memberService.addMember(validation.data);
     response.success(res, newMember, 201, "Member created successfully");
   } catch (err) {
     next(err);
@@ -52,10 +70,22 @@ async function updateMember(
   next: NextFunction,
 ) {
   try {
-    const trimmed = trimStrings(req.body);
+    const validation = updateMemberSchema.safeParse(req.body);
+    if (!validation.success) {
+      return response.failure(
+        res,
+        validation.error.errors.map((e) => ({
+          field: e.path.join("."),
+          message: e.message,
+        })),
+        400,
+      );
+    }
+
     const filtered = Object.fromEntries(
-      Object.entries(trimmed).filter(([, v]) => v !== ""),
-    ) as Partial<Omit<Member, "id">>;
+      Object.entries(validation.data).filter(([, v]) => v !== "" && v !== undefined),
+    ) as UpdateMemberInput;
+
     const updatedMember = await memberService.updateMember(
       req.params.id,
       filtered,
