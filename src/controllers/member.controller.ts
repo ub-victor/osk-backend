@@ -3,7 +3,7 @@ import memberService from "../services/member.service";
 import response from "../utils/response";
 import { Member } from "../generated/prisma/client";
 
-async function findAllMembers( 
+async function findAllMembers(
   _req: Request,
   res: Response,
   next: NextFunction,
