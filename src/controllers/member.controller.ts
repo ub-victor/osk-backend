@@ -74,7 +74,7 @@ async function deleteMember(
     response.success(res, null, 204, "Member deleted successfully");
   } catch (err) {
     next(err);
-  } 
+  }
 }
 
 export default {
