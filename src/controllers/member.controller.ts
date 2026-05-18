@@ -66,7 +66,7 @@ async function updateMember(
 
 async function deleteMember(
   req: Request<{ id: string }>,
-  res: Response,
+  res: Response, 
   next: NextFunction,
 ) {
   try {
