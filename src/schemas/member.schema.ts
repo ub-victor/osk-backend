@@ -2,7 +2,7 @@ import { z } from "zod";
 import { CodingLevel } from "../generated/prisma/client";
 
 export const createMemberSchema = z.object({
-  name: z.string().min(1, "Name is required").trim(),
+    name: z.string().min(1, "Name is required").trim(),
   email: z
     .string()
     .min(1, "Email is required")
