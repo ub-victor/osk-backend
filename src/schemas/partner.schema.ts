@@ -7,7 +7,7 @@ export const createPartnerSchema = z.object({
         .min(1, "Website URL is required")
         .url("Website URL must be a valid URL")
         .trim(),
-description: z.string().min(1, "Description is required").trim(),
+    description: z.string().min(1, "Description is required").trim(),
   email: z
     .string()
     .min(1, "Email is required")
