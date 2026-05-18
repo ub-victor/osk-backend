@@ -14,7 +14,7 @@ githubUsername: z
     .trim(),
     orgName: z.string().min(1, "Organization name is required").trim(),
     joinReason: z.string().min(1, "Join reason is required").trim(),
-codingLevel: z.enum(["beginner", "intermediate", "advanced"] as const),
+    codingLevel: z.enum(["beginner", "intermediate", "advanced"] as const),
 });
 
 export const updateMemberSchema = createMemberSchema.partial().extend({
