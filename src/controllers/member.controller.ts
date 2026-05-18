@@ -62,7 +62,7 @@ async function updateMember(
   } catch (err) {
     next(err);
   }
-} 
+}
 
 async function deleteMember(
   req: Request<{ id: string }>,
