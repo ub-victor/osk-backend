@@ -5,7 +5,7 @@ export const createEventSchema = z
         title: z.string().min(1, "Title is required").trim(),
         tagline: z.string().trim().optional().nullable(),
         description: z.string().min(1, "Description is required").trim(),
-    category: z.string().min(1, "Category is required").trim(),
+        category: z.string().min(1, "Category is required").trim(),
     mode: z.enum(["in-person", "virtual", "hybrid"] as const).default("in-person"),
     featured: z
       .union([z.boolean(), z.string().transform((v) => v === "true")])
