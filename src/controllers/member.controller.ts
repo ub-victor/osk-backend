@@ -85,4 +85,4 @@ export default {
   addMember,
   updateMember,
   deleteMember,
-}; 
+};
