@@ -8,7 +8,7 @@ export const createEventSchema = z
         category: z.string().min(1, "Category is required").trim(),
         mode: z.enum(["in-person", "virtual", "hybrid"] as const).default("in-person"),
         featured: z
-      .union([z.boolean(), z.string().transform((v) => v === "true")])
+        .union([z.boolean(), z.string().transform((v) => v === "true")])
       .default(false),
     capacity: z
       .union([z.number().int().nonnegative(), z.string(), z.null()])
