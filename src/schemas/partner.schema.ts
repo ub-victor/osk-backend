@@ -3,10 +3,10 @@ import { z } from "zod";
 export const createPartnerSchema = z.object({
     name: z.string().min(1, "Name is required").trim(),
     websiteUrl: z
-    .string()
-    .min(1, "Website URL is required")
-    .url("Website URL must be a valid URL")
-    .trim(),
+        .string()
+        .min(1, "Website URL is required")
+        .url("Website URL must be a valid URL")
+        .trim(),
   description: z.string().min(1, "Description is required").trim(),
   email: z
     .string()
