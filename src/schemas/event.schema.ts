@@ -21,7 +21,7 @@ export const createEventSchema = z
         return num;
     }),
     registered: z
-    .union([z.number().int().nonnegative(), z.string(), z.null()])
+        .union([z.number().int().nonnegative(), z.string(), z.null()])
       .optional()
       .nullable()
       .transform((v) => {
