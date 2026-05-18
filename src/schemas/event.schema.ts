@@ -29,7 +29,7 @@ export const createEventSchema = z
         const num = Number(v);
         if (isNaN(num)) return undefined;
         return num;
-      }),
+    }),
     date: z
       .string()
       .min(1, "Date is required")
