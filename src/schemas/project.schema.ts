@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ProjectStatus } from "../generated/prisma/client";
 
 export const createProjectSchema = z.object({
   slug: z
@@ -29,7 +28,16 @@ export const createProjectSchema = z.object({
   langColor: z.string().trim().optional().nullable(),
 });
 
-export const updateProjectSchema = createProjectSchema.partial();
+export const updateProjectSchema = createProjectSchema
+  .omit({ status: true, featured: true })
+  .partial()
+  .extend({
+    status: z.enum(["active", "archived", "paused"] as const).optional(),
+    featured: z.union([
+      z.boolean(),
+      z.string().transform((v) => v === "true"),
+    ]).optional(),
+  });
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;

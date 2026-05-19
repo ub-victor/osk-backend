@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { CodingLevel } from "../generated/prisma/client";
 
 export const createMemberSchema = z.object({
     name: z.string().min(1, "Name is required").trim(),

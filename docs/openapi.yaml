@@ -766,7 +766,10 @@ components:
         timeLabel: { type: string }
         location: { type: string }
         speakers:
-          type: string
+          oneOf:
+            - type: string
+            - type: array
+              items: { type: string }
           description: "JSON array string or comma-separated names"
           example: '["Didas Mbarushimana", "Guest Mentor"]'
         registerUrl: { type: string }
@@ -793,7 +796,11 @@ components:
         timeLabel: { type: string }
         location: { type: string }
         speakers:
-          { type: string, description: "JSON array string or comma-separated" }
+          oneOf:
+            - type: string
+            - type: array
+              items: { type: string }
+          description: "JSON array string or comma-separated"
         registerUrl: { type: string }
 
     Partner:
@@ -911,7 +918,10 @@ components:
         tagline: { type: string }
         category: { type: string }
         status: { type: string, enum: [active, archived, paused] }
-        featured: { type: boolean }
+        featured:
+          oneOf:
+            - type: boolean
+            - type: string
         maintainer: { type: string }
         langColor: { type: string }
 
@@ -930,7 +940,10 @@ components:
         tagline: { type: string }
         category: { type: string }
         status: { type: string, enum: [active, archived, paused] }
-        featured: { type: boolean }
+        featured:
+          oneOf:
+            - type: boolean
+            - type: string
         maintainer: { type: string }
         langColor: { type: string }
 

@@ -3,7 +3,7 @@ import eventService from "../services/event.service";
 import response from "../utils/response";
 import { Event, Prisma } from "../generated/prisma/client";
 import { destroyImage, uploadBuffer } from "../utils/cloudinary-upload";
-import trimStrings from "../utils/trim-strings";
+import { parseRequestBody } from "../utils/validation";
 import {
   createEventSchema,
   updateEventSchema,
@@ -42,7 +42,7 @@ async function findEventById(
 }
 
 async function addEvent(
-  req: Request<unknown, unknown, Record<string, unknown>>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
@@ -52,24 +52,23 @@ async function addEvent(
 
   let publicId: string | undefined;
   try {
-    const validation = createEventSchema.safeParse(req.body);
-    if (!validation.success) {
-      const errors = validation.error.issues
-        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
-        .join("; ");
-      return response.failure(res, errors, 400);
-    }
+    const data = parseRequestBody<CreateEventInput>(
+      createEventSchema,
+      req.body,
+      res,
+    );
+    if (!data) return;
 
     const uploaded = await uploadBuffer(req.file.buffer, FOLDER);
     publicId = uploaded.public_id;
 
-    const data: EventBody = {
-      ...validation.data,
+    const dataToSave: EventBody = {
+      ...data,
       imageUrl: uploaded.secure_url,
       imagePublicId: uploaded.public_id,
     } as EventBody;
 
-    const newEvent = await eventService.addEvent(data);
+    const newEvent = await eventService.addEvent(dataToSave);
 
     response.success(res, newEvent, 201, "Event created successfully");
   } catch (err) {
@@ -79,7 +78,7 @@ async function addEvent(
 }
 
 async function updateEvent(
-  req: Request<{ id: string }, unknown, Record<string, unknown>>,
+  req: Request<{ id: string }>,
   res: Response,
   next: NextFunction,
 ) {
@@ -88,26 +87,28 @@ async function updateEvent(
     const existing = await eventService.findEventById(req.params.id);
     if (!existing) return response.failure(res, "Event not found", 404);
 
-    const validation = updateEventSchema.safeParse(req.body);
-    if (!validation.success) {
-      const errors = validation.error.issues
-        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
-        .join("; ");
-      return response.failure(res, errors, 400);
-    }
+    const data = parseRequestBody<UpdateEventInput>(
+      updateEventSchema,
+      req.body,
+      res,
+    );
+    if (!data) return;
 
-    const data: Prisma.EventUpdateInput = Object.fromEntries(
-      Object.entries(validation.data).filter(([, v]) => v !== "" && v !== undefined),
+    const filteredData: Prisma.EventUpdateInput = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== "" && v !== undefined),
     ) as Prisma.EventUpdateInput;
 
     if (req.file) {
       const uploaded = await uploadBuffer(req.file.buffer, FOLDER);
       newPublicId = uploaded.public_id;
-      data.imageUrl = uploaded.secure_url;
-      data.imagePublicId = uploaded.public_id;
+      filteredData.imageUrl = uploaded.secure_url;
+      filteredData.imagePublicId = uploaded.public_id;
     }
 
-    const updatedEvent = await eventService.updateEvent(req.params.id, data);
+    const updatedEvent = await eventService.updateEvent(
+      req.params.id,
+      filteredData,
+    );
 
     if (req.file && existing.imagePublicId) {
       await destroyImage(existing.imagePublicId);

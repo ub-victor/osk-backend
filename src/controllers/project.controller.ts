@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import projectService from "../services/project.service";
 import response from "../utils/response";
-import { ProjectStatus } from "../generated/prisma/client";
 import { destroyImage, uploadBuffer } from "../utils/cloudinary-upload";
 import { fetchRepoSnapshot } from "../services/github.service";
-import trimStrings from "../utils/trim-strings";
+import { parseRequestBody } from "../utils/validation";
 import {
   createProjectSchema,
   updateProjectSchema,
@@ -13,20 +12,6 @@ import {
 } from "../schemas/project.schema";
 
 const FOLDER = "open-source-kigali/projects";
-
-type CreateBody = {
-  slug: string;
-  repoOwner: string;
-  repoName: string;
-  tagline: string;
-  category: string;
-  status?: ProjectStatus;
-  featured?: string | boolean;
-  maintainer?: string;
-  langColor?: string;
-};
-
-type UpdateBody = Partial<CreateBody>;
 
 async function findAllProjects(
   _req: Request,
@@ -57,7 +42,7 @@ async function findProjectBySlug(
 }
 
 async function addProject(
-  req: Request<unknown, unknown, CreateBody>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
@@ -65,27 +50,26 @@ async function addProject(
 
   let publicId: string | undefined;
   try {
-    const validation = createProjectSchema.safeParse(req.body);
-    if (!validation.success) {
-      const errors = validation.error.issues
-        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
-        .join("; ");
-      return response.failure(res, errors, 400);
-    }
+    const data = parseRequestBody<CreateProjectInput>(
+      createProjectSchema,
+      req.body,
+      res,
+    );
+    if (!data) return;
 
     const uploaded = await uploadBuffer(req.file.buffer, FOLDER);
     publicId = uploaded.public_id;
 
     const created = await projectService.addProject({
-      slug: validation.data.slug,
-      repoOwner: validation.data.repoOwner,
-      repoName: validation.data.repoName,
-      tagline: validation.data.tagline,
-      category: validation.data.category,
-      status: validation.data.status,
-      featured: validation.data.featured,
-      maintainer: validation.data.maintainer ?? null,
-      langColor: validation.data.langColor ?? null,
+      slug: data.slug,
+      repoOwner: data.repoOwner,
+      repoName: data.repoName,
+      tagline: data.tagline,
+      category: data.category,
+      status: data.status,
+      featured: data.featured,
+      maintainer: data.maintainer ?? null,
+      langColor: data.langColor ?? null,
       imageUrl: uploaded.secure_url,
       imagePublicId: uploaded.public_id,
     });
@@ -106,7 +90,7 @@ async function addProject(
 }
 
 async function updateProject(
-  req: Request<{ id: string }, unknown, UpdateBody>,
+  req: Request<{ id: string }>,
   res: Response,
   next: NextFunction,
 ) {
@@ -115,26 +99,25 @@ async function updateProject(
     const existing = await projectService.findProjectById(req.params.id);
     if (!existing) return response.failure(res, "Project not found", 404);
 
-    const validation = updateProjectSchema.safeParse(req.body);
-    if (!validation.success) {
-      const errors = validation.error.issues
-        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
-        .join("; ");
-      return response.failure(res, errors, 400);
-    }
+    const data = parseRequestBody<UpdateProjectInput>(
+      updateProjectSchema,
+      req.body,
+      res,
+    );
+    if (!data) return;
 
-    const data: Record<string, unknown> = Object.fromEntries(
-      Object.entries(validation.data).filter(([, v]) => v !== "" && v !== undefined),
+    const cleanedData: Record<string, unknown> = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== "" && v !== undefined),
     );
 
     if (req.file) {
       const uploaded = await uploadBuffer(req.file.buffer, FOLDER);
       newPublicId = uploaded.public_id;
-      data.imageUrl = uploaded.secure_url;
-      data.imagePublicId = uploaded.public_id;
+      cleanedData.imageUrl = uploaded.secure_url;
+      cleanedData.imagePublicId = uploaded.public_id;
     }
 
-    const updated = await projectService.updateProject(req.params.id, data);
+    const updated = await projectService.updateProject(req.params.id, cleanedData);
 
     if (req.file && existing.imagePublicId) {
       await destroyImage(existing.imagePublicId);

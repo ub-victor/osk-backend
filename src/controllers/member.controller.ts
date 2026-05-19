@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import memberService from "../services/member.service";
 import response from "../utils/response";
-import { Member } from "../generated/prisma/client";
-import trimStrings from "../utils/trim-strings";
+import { parseRequestBody } from "../utils/validation";
 import {
   createMemberSchema,
   updateMemberSchema,
@@ -40,20 +39,19 @@ async function findMemberById(
 }
 
 async function addMember(
-  req: Request<object, unknown, Omit<Member, "id">>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    const validation = createMemberSchema.safeParse(req.body);
-    if (!validation.success) {
-      const errors = validation.error.issues
-        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
-        .join("; ");
-      return response.failure(res, errors, 400);
-    }
+    const data = parseRequestBody<CreateMemberInput>(
+      createMemberSchema,
+      req.body,
+      res,
+    );
+    if (!data) return;
 
-    const newMember = await memberService.addMember(validation.data);
+    const newMember = await memberService.addMember(data);
     response.success(res, newMember, 201, "Member created successfully");
   } catch (err) {
     next(err);
@@ -61,21 +59,20 @@ async function addMember(
 }
 
 async function updateMember(
-  req: Request<{ id: string }, unknown, Partial<Omit<Member, "id">>>,
+  req: Request<{ id: string }>,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    const validation = updateMemberSchema.safeParse(req.body);
-    if (!validation.success) {
-      const errors = validation.error.issues
-        .map((e: any) => `${e.path.join(".") || "root"}: ${e.message}`)
-        .join("; ");
-      return response.failure(res, errors, 400);
-    }
+    const data = parseRequestBody<UpdateMemberInput>(
+      updateMemberSchema,
+      req.body,
+      res,
+    );
+    if (!data) return;
 
     const filtered = Object.fromEntries(
-      Object.entries(validation.data).filter(([, v]) => v !== "" && v !== undefined),
+      Object.entries(data).filter(([, v]) => v !== "" && v !== undefined),
     ) as UpdateMemberInput;
 
     const updatedMember = await memberService.updateMember(

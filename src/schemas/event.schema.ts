@@ -88,7 +88,40 @@ export const createEventSchema = eventBaseSchema.refine(
   },
 );
 
-export const updateEventSchema = eventBaseSchema.partial();
+export const updateEventSchema = eventBaseSchema
+  .omit({ mode: true, featured: true, speakers: true })
+  .partial()
+  .extend({
+    mode: z.enum(["in-person", "virtual", "hybrid"] as const).optional(),
+    featured: z.union([
+      z.boolean(),
+      z.string().transform((v) => v === "true"),
+    ]).optional(),
+    speakers: z
+      .union([z.array(z.string()), z.string()])
+      .optional()
+      .nullable()
+      .transform((v) => {
+        if (v === undefined) return undefined;
+        if (v === null) return [];
+        if (Array.isArray(v)) return v.map(String);
+
+        const trimmed = v.trim();
+        if (!trimmed) return [];
+        if (trimmed.startsWith("[")) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (Array.isArray(parsed)) return parsed.map(String);
+          } catch {
+            // fall through
+          }
+        }
+        return trimmed
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }),
+  });
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;
 export type UpdateEventInput = z.infer<typeof updateEventSchema>;
