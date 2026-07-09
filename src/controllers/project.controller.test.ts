@@ -46,18 +46,43 @@ describe("GET /api/projects", () => {
     expect(res.body.data).toHaveLength(1);
     expect(vi.mocked(projectService.findAllProjects)).toHaveBeenCalledWith(
       true,
+      undefined,
     );
   });
 
-  it("returns 200 and fetches all projects when featured is not provided", async () => {
+  it("returns 200 and fetches all projects when no category filter is provided", async () => {
     vi.mocked(projectService.findAllProjects).mockResolvedValue([mockProject]);
 
     const res = await request(app).get("/api/projects");
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0]).toMatchObject({
+      slug: mockProject.slug,
+      category: mockProject.category,
+    });
     expect(vi.mocked(projectService.findAllProjects)).toHaveBeenCalledWith(
       undefined,
+      undefined,
+    );
+  });
+
+  it("returns 200 and forwards the category filter to the service", async () => {
+    vi.mocked(projectService.findAllProjects).mockResolvedValue([mockProject]);
+
+    const res = await request(app).get("/api/projects?category=education");
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0]).toMatchObject({
+      slug: mockProject.slug,
+      category: mockProject.category,
+    });
+    expect(vi.mocked(projectService.findAllProjects)).toHaveBeenCalledWith(
+      undefined,
+      "education",
     );
   });
 });

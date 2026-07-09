@@ -15,13 +15,33 @@ import {
 const FOLDER = "open-source-kigali/projects";
 
 async function findAllProjects(
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    const featured = _req.query.featured === "true" ? true : undefined;
-    const projects = await projectService.findAllProjects(featured);
+    const featured = req.query.featured === "true" ? true : undefined;
+    const categoryQuery = req.query.category;
+
+    let category: string | undefined;
+    if (categoryQuery !== undefined) {
+      if (typeof categoryQuery !== "string") {
+        return response.failure(res, "category must be a string", 400);
+      }
+
+      const trimmedCategory = categoryQuery.trim();
+      if (!trimmedCategory) {
+        return response.failure(
+          res,
+          "category must be a non-empty string",
+          400,
+        );
+      }
+
+      category = trimmedCategory;
+    }
+
+    const projects = await projectService.findAllProjects(featured, category);
     response.success(res, projects, 200, "Projects retrieved successfully");
   } catch (err) {
     next(err);

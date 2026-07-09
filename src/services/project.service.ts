@@ -2,9 +2,19 @@ import { prisma } from "../config/prisma";
 import { Prisma, Project } from "../generated/prisma/client";
 import { RepoSnapshot } from "./github.service";
 
-async function findAllProjects(featured?: boolean) {
+async function findAllProjects(featured?: boolean, category?: string) {
+  const where: Prisma.ProjectWhereInput = {};
+
+  if (featured !== undefined) {
+    where.featured = featured;
+  }
+
+  if (category) {
+    where.category = { equals: category, mode: "insensitive" };
+  }
+
   return prisma.project.findMany({
-    where: featured !== undefined ? { featured } : undefined,
+    where: Object.keys(where).length > 0 ? where : undefined,
     orderBy: { createdAt: "desc" },
     omit: { imagePublicId: true },
   });
