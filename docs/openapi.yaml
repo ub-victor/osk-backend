@@ -499,6 +499,14 @@ paths:
     get:
       tags: [Projects]
       summary: List all projects
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            example: education
+          description: Filter projects by category. When provided, only projects in the selected category are returned.
       responses:
         "200":
           description: Projects retrieved successfully
@@ -512,6 +520,23 @@ paths:
                       data:
                         type: array
                         items: { $ref: "#/components/schemas/Project" }
+              examples:
+                allProjects:
+                  summary: All projects
+                  value:
+                    success: true
+                    message: Projects retrieved successfully
+                    data:
+                      - slug: osk-backend
+                        category: backend
+                filteredByCategory:
+                  summary: Projects filtered by category
+                  value:
+                    success: true
+                    message: Projects retrieved successfully
+                    data:
+                      - slug: osk-backend
+                        category: education
         "500": { $ref: "#/components/responses/InternalError" }
     post:
       tags: [Projects]
