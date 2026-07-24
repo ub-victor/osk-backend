@@ -12,7 +12,6 @@ type PartnerApplicationData = Omit<
 async function findAllPartnerApplications() {
   return prisma.partnerApplication.findMany({
     orderBy: { createdAt: "desc" },
-    omit: { organisationLogoPublicId: true },
   });
 }
 

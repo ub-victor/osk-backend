@@ -5,7 +5,7 @@ export const createProjectSchema = z.object({
     .string()
     .min(1, "Slug is required")
     .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      /^[a-z]+(?:-[a-z]+)*$/,
       "Slug must be lowercase with hyphens only, no spaces or special characters",
     )
     .trim(),

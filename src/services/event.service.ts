@@ -4,7 +4,7 @@ import { Event, Prisma } from "../generated/prisma/client";
 async function findAllEvents(featured?: boolean) {
   return prisma.event.findMany({
     where: featured !== undefined ? { featured } : undefined,
-    orderBy: { date: "asc" },
+    orderBy: { date: "desc" },
     omit: { imagePublicId: true },
   });
 }

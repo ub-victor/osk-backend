@@ -10,7 +10,7 @@ async function findAllProjects(featured?: boolean, category?: string) {
   }
 
   if (category) {
-    where.category = { equals: category, mode: "insensitive" };
+    where.category = { equals: category };
   }
 
   return prisma.project.findMany({

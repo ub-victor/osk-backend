@@ -4,7 +4,6 @@ import { Partner } from "../generated/prisma/client";
 async function findAllPartners() {
   return prisma.partner.findMany({
     orderBy: { name: "asc" },
-    omit: { logoPublicId: true },
   });
 }
 

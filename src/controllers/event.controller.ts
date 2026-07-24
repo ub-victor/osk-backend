@@ -69,7 +69,6 @@ async function addEvent(req: Request, res: Response, next: NextFunction) {
     if (!data) return;
 
     const uploaded = await uploadBuffer(req.file.buffer, FOLDER);
-    publicId = uploaded.public_id;
 
     const dataToSave: EventBody = {
       ...data,
@@ -78,6 +77,7 @@ async function addEvent(req: Request, res: Response, next: NextFunction) {
     } as EventBody;
 
     const newEvent = await eventService.addEvent(dataToSave);
+    publicId = uploaded.public_id;
 
     response.success(res, newEvent, 201, "Event created successfully");
   } catch (err) {
